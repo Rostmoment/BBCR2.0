@@ -13,7 +13,8 @@ namespace BBCR
 	[BepInPlugin("rost.moment.baldiremaster.better", "Baldi's Basics Classic Remastered 2.0", "1.0")]
 	public class BasePlugin : BaseUnityPlugin
 	{
-		public static AssetManager assets = new AssetManager();
+        public static string ModPath => "BALDI_Data/StreamingAssets/Modded/rost.moment.baldiremaster.better/";
+        public static AssetManager assets = new AssetManager();
         public static new ManualLogSource Logger { get; private set; }
         public static BasePlugin Instance { get; private set; }
 
@@ -45,10 +46,10 @@ namespace BBCR
         {
             yield return "Loading sounds...";
 
-            assets.Add("ZestyBarEat", AssetsAPI.CreateSoundObject(AssetsAPI.AudioClipFromFile("ChipCrunch.wav"), SoundType.Effect, Color.white, 0.5f, "*CRUNCH*"));
+            assets.Add("ZestyBarEat", ObjectsCreator.CreateSoundObject(AssetsAPI.AudioClipFromFile("ChipCrunch.wav"), SoundType.Effect, Color.white, 0.5f, "*CRUNCH*"));
             yield return null;
 
-            assets.Add("NotebookCollect", AssetsAPI.CreateSoundObject(AssetsAPI.AudioClipFromFile("NotebookCollect.wav"), SoundType.Effect, sublength: 0));
+            assets.Add("NotebookCollect", ObjectsCreator.CreateSoundObject(AssetsAPI.AudioClipFromFile("NotebookCollect.wav"), SoundType.Effect, sublength: 0));
             yield return null;
         }
 

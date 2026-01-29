@@ -39,46 +39,6 @@ namespace BBCR
     }
     public static class AssetsAPI
     {
-        public static string ModPath => "BALDI_Data/StreamingAssets/Modded/rost.moment.baldiremaster.better/";
-        private struct ExtendedEnumData
-        {
-            public int valueOffset;
-            public List<string> Enums;
-            public ExtendedEnumData(int offset)
-            {
-                valueOffset = offset;
-                Enums = new List<string>();
-            }
-        }
-        private static Dictionary<Type, ExtendedEnumData> ExtendedData = new Dictionary<Type, ExtendedEnumData>();
-        public static void PatchAllConditionals(this Harmony harmony)
-        {
-            MethodBase method = new StackTrace().GetFrame(1).GetMethod();
-            Assembly assembly = method.ReflectedType.Assembly;
-            harmony.PatchAllConditionals(assembly);
-        }
-        public static void PatchAllConditionals(this Harmony harmony, Assembly assembly, bool assumeUnmarkedAsTrue = true)
-        {
-            AccessTools.GetTypesFromAssembly(assembly).Do(type =>
-            {
-                foreach (CustomAttributeData cad in type.CustomAttributes)
-                {
-                    if (typeof(ConditionalPatch).IsAssignableFrom(cad.AttributeType))
-                    {
-                        List<CustomAttributeTypedArgument> list = cad.ConstructorArguments.ToList();
-                        List<object> paramList = new List<object>();
-                        list.Do(x => paramList.Add(x.Value));
-                        ConditionalPatch condP = (ConditionalPatch)Activator.CreateInstance(cad.AttributeType, paramList.ToArray());
-                        if (condP.ShouldPatch()) harmony.CreateClassProcessor(type).Patch();
-                        return;
-                    }
-                }
-                if (assumeUnmarkedAsTrue)
-                {
-                    harmony.CreateClassProcessor(type).Patch();
-                }
-            });
-        }
         public static readonly Dictionary<AudioType, string[]> audioExtensions = new Dictionary<AudioType, string[]>
         {
             { AudioType.MPEG, new string[] { "mp3", "mp2" } },
@@ -91,17 +51,6 @@ namespace BBCR
             { AudioType.XM, new string[] { "xm" } },
             { AudioType.XMA, new string[] { "xma" } }
         };
-        public static StandardDoorMats CreateDoor(string name, Texture2D openTex, Texture2D closeTex)
-        {
-            StandardDoorMats template = AssetsAPI.LoadAsset<StandardDoorMats>("ClassDoorSet");
-            StandardDoorMats res = ScriptableObject.CreateInstance<StandardDoorMats>();
-            res.open = new Material(template.open);
-            res.open.SetMainTexture(openTex);
-            res.shut = new Material(template.shut);
-            res.shut.SetMainTexture(closeTex);
-            res.name = name;
-            return res;
-        }
         private static readonly string[] fallbacks = new string[]
         {
             "",
@@ -110,31 +59,6 @@ namespace BBCR
             Path.Combine("File:///",""),
             Path.Combine("File://","")
         };
-        public static T ToEnum<T>(this string txt) where T : Enum
-        {
-            if (!ExtendedData.TryGetValue(typeof(T), out ExtendedEnumData dat))
-            {
-                dat = new ExtendedEnumData(256);
-                ExtendedData.Add(typeof(T), dat);
-            }
-            if (dat.Enums.Contains(txt)) 
-                return txt.GetFromExtendedName<T>();
-            dat.Enums.Add(txt);
-            return (T)(object)(dat.valueOffset + (dat.Enums.Count - 1));
-        }
-        public static T GetFromExtendedName<T>(this string name) where T : Enum
-        {
-            if (Enum.IsDefined(typeof(T), name)) 
-                return (T)Enum.Parse(typeof(T), name);
-
-            if (!ExtendedData.TryGetValue(typeof(T), out ExtendedEnumData value)) 
-                throw new KeyNotFoundException();
-
-            int index = value.Enums.FindIndex(x => x == name);
-            if (index == -1) throw new KeyNotFoundException();
-            return (T)(object)(value.valueOffset + index);
-        }
-        public static T[] GetAll<T>() where T : Enum => (T[])Enum.GetValues(typeof(T));
         public static T[] Find<T>() where T : UnityEngine.Object => Resources.FindObjectsOfTypeAll<T>();
         public static T Find<T>(int index = 0) where T : UnityEngine.Object
         {
@@ -142,28 +66,7 @@ namespace BBCR
             catch { return null; }
 
         }
-        public static Color ColorFromHex(string hex)
-        {
-            hex = hex.Replace("#", "");
-            List<List<char>> charList = hex.ToList().SplitList(2);
-            if ((charList.Count != 4 && charList.Count != 3) || charList.Any(x => x.Count != 2)) return Color.clear;
-            List<int> values = new List<int>() { };
-            foreach (List<char> chars in charList)
-            {
-                if (chars.Count != 2) return Color.clear;
-                string temp = chars[0].ToString() + chars[1].ToString();
-                try
-                {
-                    values.Add(System.Convert.ToInt16(temp, 16));
-                }
-                catch
-                {
-                    return Color.clear;
-                }
-            }
-            if (values.Count == 4) return new Color(values[0] / 255f, values[1] / 255f, values[2] / 255f, values[3] / 255f);
-            return new Color(values[0] / 255f, values[1] / 255f, values[2] / 255f);
-        }
+
         public static Texture2D CreateTexture(byte[] bytes) => CreateTexture(TextureFormat.RGBA32, bytes);
         public static Texture2D CreateTexture(TextureFormat format, byte[] bytes)
         {
@@ -176,7 +79,7 @@ namespace BBCR
         public static Texture2D CreateTexture(params string[] path) => CreateTexture(TextureFormat.RGBA32, path);
         public static Texture2D CreateTexture(TextureFormat format, params string[] path)
         {
-            Texture2D texture2D = CreateTexture(File.ReadAllBytes(ModPath + Path.Combine(path)));
+            Texture2D texture2D = CreateTexture(File.ReadAllBytes(BasePlugin.ModPath+Path.Combine(path)));
             texture2D.name = Path.GetFileNameWithoutExtension(path.Last());
             return texture2D;
         }
@@ -185,7 +88,8 @@ namespace BBCR
             string extension = Path.GetExtension(path).ToLower().Remove(0, 1).Trim();
             foreach (AudioType target in audioExtensions.Keys)
             {
-                if (audioExtensions[target].Contains(extension)) return target;
+                if (audioExtensions[target].Contains(extension)) 
+                    return target;
             }
 
             throw new NotImplementedException("Unknown audio file type:" + extension + "!");
@@ -200,7 +104,7 @@ namespace BBCR
             string errorMessage = "";
             foreach (string fallback in fallbacks)
             {
-                using (audioClip = UnityWebRequestMultimedia.GetAudioClip(fallback + ModPath + Path.Combine(path), GetAudioType(ModPath + Path.Combine(path))))
+                using (audioClip = UnityWebRequestMultimedia.GetAudioClip(fallback + BasePlugin.ModPath + Path.Combine(path), GetAudioType(BasePlugin.ModPath + Path.Combine(path))))
                 {
                     audioClip.SendWebRequest();
                     while (!audioClip.isDone) { }
@@ -215,27 +119,6 @@ namespace BBCR
                 }
             }
             throw new Exception(errorMessage);
-        }
-        public static SoundObject CreateSoundObject(AudioClip clip, SoundType type, Color? color = null, float sublength = -1f, string subtitle = "Rost")
-        {
-            SoundObject obj = ScriptableObject.CreateInstance<SoundObject>();
-            obj.soundClip = clip;
-            obj.subtitle = true;
-            if (sublength == 0f) obj.subtitle = false;
-            obj.subDuration = sublength == -1 ? clip.length + 1f : sublength;
-            obj.soundType = type;
-            obj.soundKey = subtitle;
-            obj.color = color ?? Color.white;
-            obj.name = subtitle;
-            return obj;
-        }
-        public static Color Copy(this Color color, float r = float.NaN, float g = float.NaN, float b = float.NaN, float a = float.NaN)
-        {
-            if (float.IsNaN(r)) r = color.r;
-            if (float.IsNaN(g)) g = color.g;
-            if (float.IsNaN(b)) b = color.b;
-            if (float.IsNaN(a)) a = color.a;
-            return new Color(r, g, b, a);
         }
         public static Texture2D MakeReadable(this Texture2D original)
         {
@@ -283,57 +166,6 @@ namespace BBCR
             Sprite sprite = Sprite.Create(tex, new Rect(0f, 0f, tex.width, tex.height), center, pixelsPerUnit, 0, SpriteMeshType.FullRect);
             sprite.name = "Sprite_" + tex.name;
             return sprite;
-        }
-        public static T CreateText<T>(BaldiFonts font, string text, Transform parent, Vector3 position, bool correctPosition = false) where T : TMP_Text
-        {
-            return CreateText<T>(font, text, parent, position, Color.white, correctPosition);
-        }
-        public static T CreateText<T>(BaldiFonts font, string text, Transform parent, Vector3 position, string color = null, bool correctPosition = false) where T : TMP_Text
-        {
-            return CreateText<T>(font, text, parent, position, ColorFromHex(color), correctPosition);
-        }
-        public static T CreateText<T>(BaldiFonts font, string text, Transform parent, Vector3 position, Color? color = null, bool correctPosition = false) where T : TMP_Text
-        {
-            T tmp = new GameObject().AddComponent<T>();
-            tmp.name = "Text";
-            tmp.gameObject.layer = LayerMask.NameToLayer("UI");
-            tmp.transform.SetParent(parent);
-            tmp.gameObject.transform.localScale = Vector3.one;
-            tmp.fontSize = font.FontSize();
-            tmp.font = font.FontAsset();
-            tmp.color = color ?? Color.white;
-            if (correctPosition)
-            {
-                tmp.transform.localPosition = new Vector3(-240f, 180f) + (new Vector3(position.x, position.y * -1f));
-            }
-            else
-            {
-                tmp.transform.localPosition = position;
-            }
-            tmp.text = text;
-            return tmp;
-        }
-        public static Image CreateImage(Sprite spr, Transform parent, Vector3 position, bool correctPosition = false, float scale = 1f)
-        {
-            Image img = new GameObject().AddComponent<Image>();
-            img.gameObject.layer = LayerMask.NameToLayer("UI");
-            img.transform.SetParent(parent);
-            img.sprite = spr;
-            img.gameObject.transform.localScale = Vector3.one;
-            img.rectTransform.offsetMin = new Vector2(-spr.rect.width / 2f, -spr.rect.height / 2f);
-            img.rectTransform.offsetMax = new Vector2(spr.rect.width / 2f, spr.rect.height / 2f);
-            img.rectTransform.anchorMin = new Vector2(0f, 1f);
-            img.rectTransform.anchorMax = new Vector2(0f, 1f);
-            if (correctPosition)
-            {
-                img.transform.localPosition = new Vector3(-240f, 180f) + (new Vector3(position.x, position.y * -1f));
-            }
-            else
-            {
-                img.transform.localPosition = position;
-            }
-            img.transform.localScale *= scale;
-            return img;
         }
     }
 }

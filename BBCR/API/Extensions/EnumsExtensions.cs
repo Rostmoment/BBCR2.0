@@ -9,6 +9,19 @@ namespace BBCR.API.Extensions
 {
     public static class EnumsExtensions
     {
+        private struct ExtendedEnumData
+        {
+            public int valueOffset;
+            public List<string> Enums;
+            public ExtendedEnumData(int offset)
+            {
+                valueOffset = offset;
+                Enums = new List<string>();
+            }
+        }
+        private static Dictionary<Type, ExtendedEnumData> ExtendedData = new Dictionary<Type, ExtendedEnumData>();
+
+
         public static ItemObject Get(this Items item)
         {
             return Resources.FindObjectsOfTypeAll<ItemObject>().Where(x => x.itemType == item).First();
@@ -62,5 +75,34 @@ namespace BBCR.API.Extensions
                 _ => throw new NotImplementedException(),
             };
         }
+
+
+        public static T ToEnum<T>(this string txt) where T : Enum
+        {
+            if (!ExtendedData.TryGetValue(typeof(T), out ExtendedEnumData dat))
+            {
+                dat = new ExtendedEnumData(256);
+                ExtendedData.Add(typeof(T), dat);
+            }
+            if (dat.Enums.Contains(txt))
+                return txt.GetFromExtendedName<T>();
+            dat.Enums.Add(txt);
+            return (T)(object)(dat.valueOffset + (dat.Enums.Count - 1));
+        }
+        public static T GetFromExtendedName<T>(this string name) where T : Enum
+        {
+            if (Enum.IsDefined(typeof(T), name))
+                return (T)Enum.Parse(typeof(T), name);
+
+            if (!ExtendedData.TryGetValue(typeof(T), out ExtendedEnumData value))
+                throw new KeyNotFoundException();
+
+            int index = value.Enums.FindIndex(x => x == name);
+            if (index == -1) throw new KeyNotFoundException();
+            return (T)(object)(value.valueOffset + index);
+        }
+
+
+        public static T[] GetAll<T>() where T : Enum => (T[])Enum.GetValues(typeof(T));
     }
 }

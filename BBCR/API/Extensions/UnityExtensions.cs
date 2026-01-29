@@ -30,5 +30,15 @@ namespace BBCR.API.Extensions
             if (obj.GetComponent<T>() == null) return obj.AddComponent<T>();
             return obj.GetComponent<T>();
         }
+
+
+        public static Color Copy(this Color color, float r = float.NaN, float g = float.NaN, float b = float.NaN, float a = float.NaN)
+        {
+            if (float.IsNaN(r)) r = color.r;
+            if (float.IsNaN(g)) g = color.g;
+            if (float.IsNaN(b)) b = color.b;
+            if (float.IsNaN(a)) a = color.a;
+            return new Color(r, g, b, a);
+        }
     }
 }
