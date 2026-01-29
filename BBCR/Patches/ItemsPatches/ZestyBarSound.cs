@@ -7,7 +7,7 @@ namespace BBCR.Patches.ItemsPatches
     [HarmonyPatch(typeof(ITM_ZestyBar))]
     class ZestyBarSound
     {
-        [HarmonyPatch("Use")]
+        [HarmonyPatch(nameof(ITM_ZestyBar.Use))]
         [HarmonyPrefix]
         private static void AddSound() => CoreGameManager.Instance.audMan.PlaySingle(BasePlugin.assets.Get<SoundObject>("ZestyBarEat"));
     }

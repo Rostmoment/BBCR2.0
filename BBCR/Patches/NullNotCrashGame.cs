@@ -11,29 +11,36 @@ namespace BBCR.Patches
     class NullNotCrashGame
     {
         public static void QuitToMenu() => CoreGameManager.Instance.ReturnToMenu();
-        [HarmonyPatch("EndSequence", MethodType.Enumerator)]
+        
+        [HarmonyPatch(nameof(CoreGameManager.EndSequence), MethodType.Enumerator)]
         [HarmonyTranspiler]
         private static IEnumerable<CodeInstruction> ReplaceCrashWithQuiting(IEnumerable<CodeInstruction> instructions)
         {
-            List<CodeInstruction> res = new List<CodeInstruction>() { };
-            int x = 0;
-            foreach (CodeInstruction codeInstruction in instructions)
+            List<CodeInstruction> instructionList = new List<CodeInstruction>(instructions);
+            
+            const int targetIndex = 191;
+            
+            if (instructionList.Count > targetIndex)
             {
-                if (x != 191) res.Add(codeInstruction);
-                else res.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(NullNotCrashGame), "QuitToMenu"))); 
-                x++;
+                instructionList[targetIndex] = new CodeInstruction(
+                    OpCodes.Call, 
+                    AccessTools.Method(typeof(NullNotCrashGame), nameof(QuitToMenu))
+                );
             }
-            return res;
+            
+            return instructionList;
         }
-        [HarmonyPatch("HoverQuit")]
+        
+        [HarmonyPatch(nameof(CoreGameManager.HoverQuit))]
         [HarmonyPrefix]
-        private static bool Cancel() => false;
-        [HarmonyPatch("Quit")]
+        private static bool CancelHoverQuit() => false;
+        
+        [HarmonyPatch(nameof(CoreGameManager.Quit))]
         [HarmonyPrefix]
         private static bool ReplaceQuitWithCustom(CoreGameManager __instance)
         {
-            GlobalCam.Instance.SetListener(true);
-            SubtitleManager.Instance.DestroyAll();
+            Singleton<GlobalCam>.Instance.SetListener(true);
+            Singleton<SubtitleManager>.Instance.DestroyAll();
             __instance.ReturnToMenu();
             return false;
         }

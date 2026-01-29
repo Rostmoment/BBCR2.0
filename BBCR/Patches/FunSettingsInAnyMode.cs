@@ -9,7 +9,7 @@ namespace BBCR.Patches
     [HarmonyPatch]
     class FunSettingsInAnyMode
     {
-        [HarmonyPatch(typeof(ClassicPartyManager), "Initialize")]
+        [HarmonyPatch(typeof(ClassicPartyManager), nameof(ClassicPartyManager.Initialize))]
         [HarmonyPrefix]
         private static void FunSettingsInPartyEndless(ClassicPartyManager __instance)
         {
@@ -18,7 +18,7 @@ namespace BBCR.Patches
             __instance.lanternStrength = 6f;
             __instance.lanternColor = new Color(0.887f, 0.765f, 0.498f, 1f);
         }
-        [HarmonyPatch(typeof(ClassicGameManager), "Initialize")]
+        [HarmonyPatch(typeof(ClassicGameManager), nameof(ClassicGameManager.Initialize))]
         [HarmonyPrefix]
         private static void FunSettingsInClassicEndless(ClassicGameManager __instance)
         {

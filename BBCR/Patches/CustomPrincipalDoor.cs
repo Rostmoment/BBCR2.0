@@ -10,7 +10,7 @@ namespace BBCR.Patches
     [HarmonyPatch(typeof(RoomController))]
     class CustomPrincipalDoor
     {
-        [HarmonyPatch("Start")]
+        [HarmonyPatch(nameof(RoomController.Start))]
         [HarmonyPostfix]
         private static void ReplaceDoor(RoomController __instance)
         {

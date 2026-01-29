@@ -12,7 +12,7 @@ namespace BBCR.Patches
     [HarmonyPatch]
     class SetupMod
     {
-        [HarmonyPatch(typeof(GameLoader), "Initialize")]
+        [HarmonyPatch(typeof(GameLoader), nameof(GameLoader.Initialize))]
         [HarmonyPostfix]
         private static void SetupFunSetting(int mode, GameLoader __instance)
         {
@@ -22,14 +22,14 @@ namespace BBCR.Patches
             CoreGameManager.Instance.hardMode = __instance.hardMode;
 
         }
-        [HarmonyPatch(typeof(MainMenu), "Start")]
+        [HarmonyPatch(typeof(MainMenu), nameof(MainMenu.Start))]
         [HarmonyPostfix]
         private static void AddLoadingScreen(MainMenu __instance)
         {
             if (!LoadingAPI.Finished)
                 __instance.gameObject.AddComponent<LoadingSceen>().mainMenu = __instance;
         }
-        [HarmonyPatch(typeof(GameLoader), "StartGame")]
+        [HarmonyPatch(typeof(GameLoader), nameof(GameLoader.StartGame))]
         [HarmonyPrefix]
         private static void SetupStyle(GameLoader __instance)
         {

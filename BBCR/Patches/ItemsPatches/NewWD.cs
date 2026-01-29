@@ -11,7 +11,7 @@ namespace BBCR.Patches.ItemsPatches
     [HarmonyPatch(typeof(ITM_NoSquee))]
     class NewWD
     {
-        [HarmonyPatch("Use")]
+        [HarmonyPatch(nameof(ITM_NoSquee.Use))]
         [HarmonyPrefix]
         private static bool NewEffect(ITM_NoSquee __instance, PlayerManager pm, ref bool __result)
         {

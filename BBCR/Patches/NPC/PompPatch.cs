@@ -7,7 +7,7 @@ namespace BBCR.Patches.NPC
     [HarmonyPatch(typeof(NoLateTeacher))]
     class PompPatch
     {
-        [HarmonyPatch("Start")]
+        [HarmonyPatch(nameof(NoLateTeacher.Start))]
         [HarmonyPrefix]
         private static void FixSubtitles(NoLateTeacher __instance)
         {
@@ -25,7 +25,7 @@ namespace BBCR.Patches.NPC
             __instance.audMinutes.soundKey = "minutes.";
             __instance.audMinutesLeft.soundKey = "minutes left.";
         }
-        [HarmonyPatch("OnTriggerEnter")]
+        [HarmonyPatch(nameof(NoLateTeacher.OnTriggerEnter))]
         [HarmonyTranspiler]
         private static IEnumerable<CodeInstruction> RemoveMapAudioClip(IEnumerable<CodeInstruction> instructions)
         {

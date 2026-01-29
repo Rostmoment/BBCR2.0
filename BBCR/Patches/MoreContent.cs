@@ -23,8 +23,9 @@ namespace BBCR.Patches
             new Vector3(83, 0, 161),
             new Vector3(85, 0, 161),
             new Vector3(201, 0, 247),
-            new Vector3(209, 0 ,323)
+            new Vector3(209, 0, 323)
         };
+
         [HarmonyPatch(typeof(EnvironmentController), nameof(EnvironmentController.SpawnNPCs))]
         [HarmonyPrefix]
         private static void AddPomp(EnvironmentController __instance)
@@ -62,11 +63,12 @@ namespace BBCR.Patches
                 pickup.transform.localPosition = new Vector3(0, 5, -3);
             }
         }
-        [HarmonyPatch(typeof(BaseGameManager), "Initialize")]
+
+        [HarmonyPatch(typeof(BaseGameManager), nameof(BaseGameManager.Initialize))]
         [HarmonyPrefix]
         private static void AddWaterFountain(BaseGameManager __instance)
         {
-            if (!ModdedOptionMenu.WaterFountainsEnabled) 
+            if (!ModdedOptionMenu.WaterFountainsEnabled)
                 return;
 
             Dictionary<Vector3, float> positions = new Dictionary<Vector3, float>()
@@ -80,27 +82,28 @@ namespace BBCR.Patches
             foreach (var data in positions)
             {
                 TileController tile = __instance.ec.TileFromPos(data.Key);
-                WaterFountain fountain = GameObject.Instantiate(BasePlugin.assets.Get<WaterFountain>("WaterFountainPrefab"));
+                WaterFountain fountain = GameObject.Instantiate(BasePlugin.assets.Get<WaterFountain>(nameof(WaterFountain) + "Prefab"));
                 fountain.transform.SetParent(tile.transform, false);
                 fountain.transform.rotation = Quaternion.Euler(fountain.transform.rotation.x, data.Value, fountain.transform.rotation.z);
             }
         }
-        [HarmonyPatch(typeof(BaseGameManager), "Initialize")]
+
+        [HarmonyPatch(typeof(BaseGameManager), nameof(BaseGameManager.Initialize))]
         [HarmonyPrefix]
         private static void AddBlueLockers(BaseGameManager __instance)
         {
-            if (!ModdedOptionMenu.BlueLockersEnabled) 
+            if (!ModdedOptionMenu.BlueLockersEnabled)
                 return;
 
             foreach (Vector3 vector in blueLockersVectors)
             {
                 TileController tile = __instance.ec.TileFromPos(vector);
-                HideableLocker locker = GameObject.Instantiate(BasePlugin.assets.Get<HideableLocker>("BlueLockerPrefab"));
+                HideableLocker locker = GameObject.Instantiate(BasePlugin.assets.Get<HideableLocker>(nameof(HideableLocker) + "Prefab"));
                 locker.transform.SetParent(tile.transform, false);
                 locker.transform.position = vector;
                 foreach (Transform transform in __instance.ec.mainHall.transform.Find("RoomObjects").GetChilds())
                 {
-                    if (transform.name.ToString() == "Locker(Clone)" && transform.position == vector)
+                    if (transform.name == "Locker(Clone)" && transform.position == vector)
                     {
                         transform.gameObject.SetActive(false);
                         locker.transform.rotation = transform.rotation;
@@ -111,4 +114,3 @@ namespace BBCR.Patches
         }
     }
 }
-    

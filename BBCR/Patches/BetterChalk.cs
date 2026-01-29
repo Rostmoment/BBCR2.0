@@ -9,7 +9,7 @@ namespace BBCR.Patches
     [HarmonyPatch(typeof(ChalkEraser))]
     internal class BetterChalk
     {
-        [HarmonyPatch("Use")]
+        [HarmonyPatch(nameof(ChalkEraser.Use))]
         [HarmonyPostfix]
         private static void FixMirroredChalkEraser(ChalkEraser __instance)
         {

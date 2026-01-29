@@ -11,7 +11,7 @@ namespace BBCR.Patches
     [HarmonyPatch]
     class MoreSlots
     {
-        [HarmonyPatch(typeof(ItemManager), "Update")]
+        [HarmonyPatch(typeof(ItemManager), nameof(ItemManager.Update))]
         [HarmonyPostfix]
         private static void ChooseMoreSlots(ItemManager __instance)
         {
@@ -29,7 +29,7 @@ namespace BBCR.Patches
                 }
             }
         }
-        [HarmonyPatch(typeof(ItemManager), "Awake")]
+        [HarmonyPatch(typeof(ItemManager), nameof(ItemManager.Awake))]
         [HarmonyPrefix]
         private static void AddMoreSlots(ItemManager __instance)
         {
