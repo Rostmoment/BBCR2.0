@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using BBCR.API;
+using BBCR.API.Extensions;
 using HarmonyLib;
 namespace BBCR.Patches
 {
     [HarmonyPatch]
     class FixingBugs
     {
-        [HarmonyPatch(typeof(YCTP), "OnDisable")]
+        [HarmonyPatch(typeof(YCTP), nameof(YCTP.OnDisable))]
         [HarmonyPostfix]
         private static void FixYCTPHardMode(YCTP __instance)
         {
@@ -22,6 +22,7 @@ namespace BBCR.Patches
 
         [HarmonyPatch(typeof(EnvironmentController), nameof(EnvironmentController.StartEventTimers))]
         [HarmonyPrefix]
-        private static void AlwaysRandomizeEvents(EnvironmentController __instance) => __instance.RandomizeEvents(__instance.EventsCount, 30f, 30f, 180f, new System.Random());
+        private static void AlwaysRandomizeEvents(EnvironmentController __instance) =>
+            __instance.RandomizeEvents(__instance.EventsCount, 30f, 30f, 180f, new System.Random());
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using HarmonyLib;
-using BBCR.API;
+using BBCR.API.Extensions;
 
 namespace BBCR.Patches
 {

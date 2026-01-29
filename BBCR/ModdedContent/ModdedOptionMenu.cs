@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BBCR
+namespace BBCR.ModdedContent
 {
     static class ModdedOptionMenu
     {
@@ -26,13 +26,13 @@ namespace BBCR
 
         public static void InitializeGlobal()
         {
-            partyEventConfig = BasePlugin.Instance.Config.Bind<bool>("Options", "PartyEvent", false, "Enable to have Party Event in Demo style");
-            moreSlotsConfig = BasePlugin.Instance.Config.Bind<bool>("Options", "MoreSlots", false, "Enable to have 5 item slots instead of 3");
-            mrsPompConfig = BasePlugin.Instance.Config.Bind<bool>("Options", "MrsPomp", false, "Enable to have Mrs. Pomp in Demo style");
-            blueLockersConfig = BasePlugin.Instance.Config.Bind<bool>("Options", "BlueLockers", false, "Enable to have blue lockers");
-            waterFountainsConfig = BasePlugin.Instance.Config.Bind<bool>("Options", "WaterFountains", false, "Enable to have water fountains");
-            newWDConfig = BasePlugin.Instance.Config.Bind<bool>("Options", "New WD", false, "Enable to make WD work like in newest BBPlus versions");
-            swapThrowItemKeyConfig = BasePlugin.Instance.Config.Bind<bool>("Options", "SwapThrowItemKey", false, "Enable to swap throw item key");
+            partyEventConfig = BasePlugin.Instance.Config.Bind("Options", "PartyEvent", false, "Enable to have Party Event in Demo style");
+            moreSlotsConfig = BasePlugin.Instance.Config.Bind("Options", "MoreSlots", false, "Enable to have 5 item slots instead of 3");
+            mrsPompConfig = BasePlugin.Instance.Config.Bind("Options", "MrsPomp", false, "Enable to have Mrs. Pomp in Demo style");
+            blueLockersConfig = BasePlugin.Instance.Config.Bind("Options", "BlueLockers", false, "Enable to have blue lockers");
+            waterFountainsConfig = BasePlugin.Instance.Config.Bind("Options", "WaterFountains", false, "Enable to have water fountains");
+            newWDConfig = BasePlugin.Instance.Config.Bind("Options", "New WD", false, "Enable to make WD work like in newest BBPlus versions");
+            swapThrowItemKeyConfig = BasePlugin.Instance.Config.Bind("Options", "SwapThrowItemKey", false, "Enable to swap throw item key");
         }
         public static void Initialize(OptionsMenu menu)
         {

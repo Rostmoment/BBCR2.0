@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using BBCR.ModdedContent;
+using HarmonyLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;

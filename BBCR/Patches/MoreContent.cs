@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BBCR.API;
+using BBCR.API.Extensions;
+using BBCR.ModdedContent;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.SceneManagement;

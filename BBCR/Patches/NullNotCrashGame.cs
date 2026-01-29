@@ -10,7 +10,7 @@ namespace BBCR.Patches
     [HarmonyPatch(typeof(CoreGameManager))]
     class NullNotCrashGame
     {
-        public static void QuitToMenu() => Singleton<CoreGameManager>.Instance.ReturnToMenu();
+        public static void QuitToMenu() => CoreGameManager.Instance.ReturnToMenu();
         [HarmonyPatch("EndSequence", MethodType.Enumerator)]
         [HarmonyTranspiler]
         private static IEnumerable<CodeInstruction> ReplaceCrashWithQuiting(IEnumerable<CodeInstruction> instructions)

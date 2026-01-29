@@ -138,8 +138,8 @@ namespace BBCR.API
     [HarmonyPatch(typeof(OptionsMenu))]
     class OptionsAPI
     {
-        public static Action<OptionsMenu> OnInitialize;
-        public static Action<OptionsMenu> OnClose;
+        public static event Action<OptionsMenu> onInitialize;
+        public static event Action<OptionsMenu> OnClose;
 
         public static OptionsCategory CreateCategory(OptionsMenu optionsMenu, string name)
         {
@@ -147,12 +147,16 @@ namespace BBCR.API
             Transform nextTitle = UnityEngine.Object.Instantiate(prefabTransform.Find("NextTitle"));
             Transform previousTitle = UnityEngine.Object.Instantiate(prefabTransform.Find("PreviousTitle"));
             Transform title = UnityEngine.Object.Instantiate(prefabTransform.Find("Title"));
+
+
             GameObject res = new GameObject(name, typeof(RectTransform));
             res.transform.SetParent(optionsMenu.transform, false);
             res.layer = LayerMask.NameToLayer("UI");
             optionsMenu.categories = optionsMenu.categories.AddToArray(res);
             res.SetActive(false);
             res.transform.SetSiblingIndex(1);
+
+
             title.SetParent(res.transform);
             title.GetComponent<TextMeshProUGUI>().text = name;
             title.SetSiblingIndex(1);
@@ -161,16 +165,22 @@ namespace BBCR.API
             title.localScale = new Vector3(1, 1, 1);
             title.name = "Title"; // Fix custom category name
             title.gameObject.name = "Title";
+
+
             nextTitle.SetParent(res.transform);
             nextTitle.localScale = new Vector3(1, 1, 1);
             nextTitle.localPosition = new Vector3(127.9999f, 101.9999f, 0);
             nextTitle.name = "NextTitle"; // Fix custom category name
             nextTitle.gameObject.name = "NextTitle";
+
+
             previousTitle.SetParent(res.transform);
             previousTitle.localScale = new Vector3(1, 1, 1);
             previousTitle.localPosition = new Vector3(-128, 101.999f, 0);
             previousTitle.name = "PreviousTitle"; // Fix custom category name
             previousTitle.gameObject.name = "PreviousTitle";
+
+
             optionsMenu.ChangeCategory(0);
             FixCategoryNames(optionsMenu);
             return new OptionsCategory(res, optionsMenu);
@@ -196,8 +206,12 @@ namespace BBCR.API
                     previousCategory = menu.categories[i - 1].transform;
                     nextCategory = menu.categories[i + 1].transform;
                 }
-                if (previousCategory.gameObject.name == "Data") previousCategory = previousCategory.Find("Main");
-                if (nextCategory.gameObject.name == "Data") nextCategory = nextCategory.Find("Main");
+                if (previousCategory.gameObject.name == "Data") 
+                    previousCategory = previousCategory.Find("Main");
+                if (nextCategory.gameObject.name == "Data") 
+                    nextCategory = nextCategory.Find("Main");
+
+
                 GameObject category = menu.categories[i];
                 Transform data = category.transform;
                 if (category.name == "Data") data = category.transform.Find("Main");
@@ -205,21 +219,21 @@ namespace BBCR.API
                 data.Find("PreviousTitle").GetComponent<TextLocalizer>().key = previousCategory.Find("Title").GetComponent<TextLocalizer>().key;
                 data.Find("NextTitle").GetComponent<TextMeshProUGUI>().text = nextCategory.Find("Title").GetComponent<TextMeshProUGUI>().text;
                 data.Find("NextTitle").GetComponent<TextLocalizer>().key = nextCategory.Find("Title").GetComponent<TextLocalizer>().key;
-                /*Debug.Log(string.Concat(data.Find("NextTitle").IsNull(), "/", data.Find("PreviousTitle").IsNull(), "/", previousCategory.Find("Title").IsNull(), 
-                    "/", nextCategory.Find("Title").IsNull(), "/", data.IsNull(), "/", nextCategory.IsNull(), "/", previousCategory.IsNull(), "/", category.name));*/
             }
         }
-        [HarmonyPatch("Awake")]
+
+        [HarmonyPatch(nameof(OptionsMenu.Awake))]
         [HarmonyPostfix]
         private static void Awake(OptionsMenu __instance)
         {
-            if (OnInitialize != null) OnInitialize(__instance);
+            onInitialize?.Invoke(__instance);
         }
-        [HarmonyPatch("Close")]
+
+        [HarmonyPatch(nameof(OptionsMenu.Close))]
         [HarmonyPostfix]
         private static void Close(OptionsMenu __instance)
         {
-            if (OnClose != null) OnClose(__instance);
+            OnClose?.Invoke(__instance);
         }
     }
 }

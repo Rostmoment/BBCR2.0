@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using BBCR.ModdedContent;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;

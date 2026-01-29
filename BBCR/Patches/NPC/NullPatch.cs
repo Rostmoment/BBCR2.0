@@ -10,7 +10,7 @@ namespace BBCR.Patches.NPC
     [HarmonyPatch(typeof(NullNPC))]
     class NullPatch
     {
-        [HarmonyPatch("Update")]
+        [HarmonyPatch(nameof(NullNPC.Update))]
         [HarmonyPostfix]
         private static void AlwaysWindow(NullNPC __instance)
         {
@@ -18,7 +18,7 @@ namespace BBCR.Patches.NPC
                 __instance.Navigator.passableObstacles.Add(PassableObstacle.Window);
         }
 
-        [HarmonyPatch("Hit")]
+        [HarmonyPatch(nameof(NullNPC.Hit))]
         [HarmonyPrefix]
         private static void OnNullHit(NullNPC __instance)
         {
@@ -29,15 +29,5 @@ namespace BBCR.Patches.NPC
             else if (CoreGameManager.Instance.hardMode && __instance.health == 1)
                 __instance.stunTime = 0.5f;
         }
-        [HarmonyPatch("OnTriggerEnter")]
-        [HarmonyPrefix]
-        static bool OnTriggerEnterPrefix(Collider other)
-        {
-            if (!NullStyle.bossActive && CoreGameManager.Instance.freeRun && other.tag == "Player")
-                return false;
-            
-            return true;
-        }
-
     }
 }

@@ -17,8 +17,8 @@ namespace BBCR.Patches
         private static void SetupFunSetting(int mode, GameLoader __instance)
         {
             VariablesStorage.styleIsEndless = mode != 0;
-            Singleton<CoreGameManager>.Instance.mirrorMode = __instance.mirrorMode;
-            Singleton<CoreGameManager>.Instance.lightsOut = __instance.lightsOut;
+            CoreGameManager.Instance.mirrorMode = __instance.mirrorMode;
+            CoreGameManager.Instance.lightsOut = __instance.lightsOut;
             CoreGameManager.Instance.hardMode = __instance.hardMode;
 
         }
