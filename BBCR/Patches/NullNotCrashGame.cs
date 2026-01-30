@@ -39,8 +39,8 @@ namespace BBCR.Patches
         [HarmonyPrefix]
         private static bool ReplaceQuitWithCustom(CoreGameManager __instance)
         {
-            Singleton<GlobalCam>.Instance.SetListener(true);
-            Singleton<SubtitleManager>.Instance.DestroyAll();
+            GlobalCam.Instance.SetListener(true);
+            SubtitleManager.Instance.DestroyAll();
             __instance.ReturnToMenu();
             return false;
         }

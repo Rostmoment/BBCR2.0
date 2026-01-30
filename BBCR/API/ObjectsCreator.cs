@@ -22,7 +22,7 @@ namespace BBCR.API
             return res;
         }
 
-        public static SoundObject CreateSoundObject(AudioClip clip, SoundType type, Color? color = null, float sublength = -1f, string subtitle = "Rost")
+        public static SoundObject CreateSoundObject(AudioClip clip, SoundType type, Color? color = null, float sublength = -1f, string subtitle = "None")
         {
             SoundObject obj = ScriptableObject.CreateInstance<SoundObject>();
             obj.soundClip = clip;

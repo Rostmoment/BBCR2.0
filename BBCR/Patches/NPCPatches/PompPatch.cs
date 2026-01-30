@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using HarmonyLib;
-namespace BBCR.Patches.NPC
+namespace BBCR.Patches.NPCPatches
 {
     [HarmonyPatch(typeof(NoLateTeacher))]
     class PompPatch

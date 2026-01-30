@@ -51,6 +51,9 @@ namespace BBCR
 
             assets.Add("NotebookCollect", ObjectsCreator.CreateSoundObject(AssetsAPI.AudioClipFromFile("NotebookCollect.wav"), SoundType.Effect, sublength: 0));
             yield return null;
+
+            assets.Add("GetOutWhileStillCan", ObjectsCreator.CreateSoundObject(AssetsAPI.AudioClipFromFile("GETOUT.wav"), SoundType.Voice, Color.white, -1, "GET OUT WHILE YOU STILL CAN!!!"));
+            yield return null;
         }
 
         private IEnumerator LoadPrefabs()
